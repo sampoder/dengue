@@ -1,6 +1,7 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { orderBy, filter } from "lodash";
+import Trend from "react-trend";
 
 function isOdd(n) {
   return Math.abs(n % 2) == 1;
@@ -10,7 +11,7 @@ export default function Home(props) {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title>Dengue Tracker - SG</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -18,52 +19,22 @@ export default function Home(props) {
         <h1 className={styles.title}>Dengue Tracker</h1>
 
         <p className={styles.description}>
-          Last week we had <code className={styles.code}>{props.latestNo}</code>
-          cases, thats {props.change} {props.change > 0 ? "less" : "more"} than
-          last week.
+          Last week we had <strong className={styles.code}>{props.latestNo}</strong>
+          cases, thats <strong className={styles.code}>{props.change}</strong>{" "}
+          {props.change > 0 ? "less" : "more"} than last week.
         </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+        <Trend
+          smooth
+          autoDraw
+          autoDrawDuration={10000}
+          autoDrawEasing="ease-out"
+          data={props.numbers.reverse()}
+          gradient={["#eb1e58"]}
+          radius={10}
+          strokeWidth={2}
+          strokeLinecap={"round"}
+        />
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
     </div>
   );
 }
@@ -85,13 +56,17 @@ export async function getStaticProps(context) {
   for (var week in cases) {
     if (!isOdd(week)) {
       weeks.push(cases[week]);
+      numbers.push(cases[week]['no._of_cases'] / 100 );
     }
   }
+
+  console.log(numbers)
   console.log(weeks);
   console.log(weeks[1]["no._of_cases"] - weeks[0]["no._of_cases"]);
   return {
     props: {
       cases: weeks,
+      numbers: numbers,
       latestNo: weeks[0]["no._of_cases"],
       change: weeks[1]["no._of_cases"] - weeks[0]["no._of_cases"],
     },
