@@ -70,5 +70,6 @@ export async function getStaticProps(context) {
       latestNo: weeks[0]["no._of_cases"],
       change: weeks[1]["no._of_cases"] - weeks[0]["no._of_cases"],
     },
+    revalidate: 500
   };
 }
